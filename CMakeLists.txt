@@ -4,11 +4,11 @@ project(onnxrunime_example CXX)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 if(UNIX)
-    target_include_directories(${PROJECT_NAME} PRIVATE onnxrunime/linux/include)
-    target_link_directories(${PROJECT_NAME} PRIVATE onnxrunime/linux/lib)
+    target_include_directories(${PROJECT_NAME} PRIVATE onnxruntime/linux/include)
+    target_link_directories(${PROJECT_NAME} PRIVATE onnxruntime/linux/lib)
 elseif(WIN32)
-    target_include_directories(${PROJECT_NAME} PRIVATE onnxrunime/win/include)
-    target_link_directories(${PROJECT_NAME} PRIVATE onnxrunime/win/lib)
+    target_include_directories(${PROJECT_NAME} PRIVATE onnxruntime/windows/include)
+    target_link_directories(${PROJECT_NAME} PRIVATE onnxruntime/windows/lib)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
