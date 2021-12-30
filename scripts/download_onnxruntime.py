@@ -1,7 +1,7 @@
 import os
 
 package_version = '1.10.0'
-with_gpu = True 
+with_gpu = False #True 
 platform = 'linux'
 # platform = 'windows'
 # platform = 'mac'
