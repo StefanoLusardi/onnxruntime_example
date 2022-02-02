@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <onnxruntime_cxx_api.h>
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/core.hpp>
@@ -150,23 +151,14 @@ int main(int argc, char** argv)
 
     session.Run(Ort::RunOptions{ nullptr }, inputNames.data(), inputTensors.data(), 1, outputNames.data(), outputTensors.data(), 1);
 
-    int predId = 0;
-    float activation = 0;
-    float maxActivation = std::numeric_limits<float>::lowest();
-    float expSum = 0;
-    for (int i = 0; i < labels.size(); i++)
-    {
-        activation = outputTensorValues.at(i);
-        expSum += std::exp(activation);
-        if (activation > maxActivation)
-        {
-            predId = i;
-            maxActivation = activation;
-        }
-    }
-    std::cout << "Predicted Label ID: " << predId << std::endl;
-    std::cout << "Predicted Label: " << labels.at(predId) << std::endl;
-    std::cout << "Uncalibrated Confidence: " << std::exp(maxActivation) / expSum << std::endl;
+    auto best_prediction = std::max_element(outputTensorValues.begin(), outputTensorValues.end());
+    std::cout << "\n\nprediction_score: " << *best_prediction << std::endl;
+
+    auto prediction_index = std::distance(outputTensorValues.begin(), best_prediction);
+    std::cout << "prediction_index: " << prediction_index << std::endl;
+
+    auto prediction_label = labels.at(prediction_index);
+    std::cout << "prediction_label: " << prediction_label << std::endl;
 
     return 0;
 }
