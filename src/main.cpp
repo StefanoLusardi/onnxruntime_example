@@ -54,22 +54,17 @@ std::vector<std::string> readLabels(std::string& labelFilepath)
 
 int main(int argc, char** argv)
 {
-    if (argc < 1)
-    {
-        std::cout << "provide an image path as input" << std::endl;
-        return -1;
-    }
-
     std::string instanceName{ "image-classification-inference" };
-    std::string modelFilepath{ "../../../data/models/squeezenet1.1-7.onnx" };
-    std::string imageFilepath{ std::string(argv[1]) };
+    std::string imageFilepath{ "../../../data/images/dog.jpg" };
     std::string labelFilepath{ "../../../data/labels/synset.txt" };
+    std::string modelFilepath{ "../../../data/models/squeezenet1.1-7.onnx" };
 
     std::vector<std::string> labels{ readLabels(labelFilepath) };
 
     Ort::Env env(OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING, instanceName.c_str());
     Ort::SessionOptions sessionOptions;
     sessionOptions.SetIntraOpNumThreads(1);
+    sessionOptions.SetInterOpNumThreads(1);
 
     // OrtCUDAProviderOptions cuda_options;
     // sessionOptions.AppendExecutionProvider_CUDA(cuda_options);

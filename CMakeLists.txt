@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(onnxrunime_example CXX)
+project(onnxruntime_example CXX)
 
 set(CONAN_SYSTEM_INCLUDES ON)
 set(CONAN_CMAKE_SILENT_OUTPUT ON)
@@ -18,8 +18,8 @@ find_package(OpenCV)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 if(UNIX)
-    target_include_directories(${PROJECT_NAME} PRIVATE onnxruntime/linux/include)
-    target_link_directories(${PROJECT_NAME} PRIVATE onnxruntime/linux/lib)
+    target_include_directories(${PROJECT_NAME} PRIVATE onnxruntime/linux-gpu/include)
+    target_link_directories(${PROJECT_NAME} PRIVATE onnxruntime/linux-gpu/lib)
 elseif(WIN32)
     target_include_directories(${PROJECT_NAME} PRIVATE onnxruntime/windows/include)
     target_link_directories(${PROJECT_NAME} PRIVATE onnxruntime/windows/lib)
