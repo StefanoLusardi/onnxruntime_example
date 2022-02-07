@@ -19,6 +19,10 @@
 https://github.com/leimao/ONNX-Runtime-Inference/blob/main/src/inference.cpp
 */
 
+/*
+https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/ssd-mobilenetv1
+*/
+
 template<typename T>
 T vectorProduct(const std::vector<T>& v)
 {
@@ -147,9 +151,13 @@ int main(int argc, char** argv)
 
     inputTensors.push_back(Ort::Value::CreateTensor<float>(memoryInfo, inputTensorValues.data(), inputTensorSize, inputDims.data(), inputDims.size()));
 
-    outputTensors.push_back(Ort::Value::CreateTensor<float>(memoryInfo, outputTensorValues.data(), outputTensorSize, outputDims.data(), outputDims.size()));
+    // outputTensors.push_back(Ort::Value::CreateTensor<float>(memoryInfo, outputTensorValues.data(), outputTensorSize, outputDims.data(), outputDims.size()));
+    // session.Run(Ort::RunOptions{ nullptr }, inputNames.data(), inputTensors.data(), 1, outputNames.data(), outputTensors.data(), 1);
 
-    session.Run(Ort::RunOptions{ nullptr }, inputNames.data(), inputTensors.data(), 1, outputNames.data(), outputTensors.data(), 1);
+    std::vector<Ort::Value> out = session.Run(Ort::RunOptions{ nullptr }, inputNames.data(), inputTensors.data(), 1, outputNames.data(), 1);
+    const float* out_data = out[0].GetTensorData<float>();
+    size_t count = out[0].GetTensorTypeAndShapeInfo().GetElementCount();
+    std::vector<float> output(out_data, out_data + count);
 
     auto best_prediction = std::max_element(outputTensorValues.begin(), outputTensorValues.end());
     std::cout << "\n\nprediction_score: " << *best_prediction << std::endl;

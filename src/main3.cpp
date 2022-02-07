@@ -54,6 +54,20 @@ std::vector<std::string> readLabels(std::string& labelFilepath)
     return labels;
 }
 
+template<typename T>
+void parse_output(const Ort::Value& out_data, unsigned long result_size, const std::vector<std::string>& labels)
+{
+    auto result_ptr = out_data.GetTensorData<T>();
+    auto best_prediction = std::max_element(result_ptr, result_ptr + result_size);
+    std::cout << "\n\nprediction_score: " << *best_prediction << std::endl;
+
+    auto prediction_index = std::distance(result_ptr, best_prediction);
+    std::cout << "prediction_index: " << prediction_index << std::endl;
+
+    auto prediction_label = labels.at(prediction_index);
+    std::cout << "prediction_label: " << prediction_label << std::endl;
+}
+
 int main(int argc, char** argv)
 {
     std::string instanceName{ "image-classification-inference" };
@@ -154,26 +168,30 @@ int main(int argc, char** argv)
         std::cout << "prediction_label: " << prediction_label << std::endl;
     };
 
-    switch(outputType)
+    for (auto&& output : outputTensors)
     {
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
-        {
-            auto out = outputTensors[0].GetTensorData<float>();
-            auto out_size = outputTensors[0].GetTensorTypeAndShapeInfo().GetElementCount();
-            print_results(out, out_size);
-            break;
-        }
+        auto out_type = output.GetTensorTypeAndShapeInfo().GetElementType();
+        auto out_size = output.GetTensorTypeAndShapeInfo().GetElementCount();
 
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8:
+        switch (out_type)
         {
-            auto out = outputTensors[0].GetTensorData<uint8_t>();
-            auto out_size = outputTensors[0].GetTensorTypeAndShapeInfo().GetElementCount();
-            print_results(out, out_size);
-            break;
-        }
+            case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
+            {
+                // auto out_data = output.GetTensorData<float>();
+                parse_output<float>(output, out_size, labels);
+                break;
+            }
 
-        default:
-            break;
+            case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8:
+            {
+                // auto out_data = output.GetTensorData<uint8_t>();
+                parse_output<uint8_t>(output, out_size, labels);
+                break;
+            }
+
+            default:
+                break;
+        }
     }
 
     return 0;
